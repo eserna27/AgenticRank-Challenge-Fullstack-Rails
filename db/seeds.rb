@@ -2,6 +2,7 @@
 # investments so the app is immediately explorable after `docker compose up`.
 # It is idempotent: re-running it (e.g. on every container boot) upserts by a
 # natural key instead of piling up duplicate rows.
+# Monetary amounts are integer cents (e.g. 500_00 = 500.00 MXN).
 
 investors = [
   { name: "Ana Martinez", email: "ana@example.com" },
@@ -16,7 +17,7 @@ campaigns = [
     name: "Torre Reforma 180",
     description: "A 22-story mixed-use tower in the heart of Reforma, Mexico City.",
     product: "DEUDA",
-    goal: 5_000_000,
+    goal: 500_000_000, # 5,000,000.00 MXN
     annual_rate_bps: 1400,
     term_months: 18,
     status: "open",
@@ -26,7 +27,7 @@ campaigns = [
     name: "Playa Norte Residences",
     description: "Beachfront condos in Playa del Carmen, sold as fractional co-ownership.",
     product: "COPROPIEDAD",
-    goal: 3_200_000,
+    goal: 320_000_000, # 3,200,000.00 MXN
     annual_rate_bps: 1100,
     term_months: 24,
     status: "open",
@@ -36,7 +37,7 @@ campaigns = [
     name: "Distrito Roma Lofts",
     description: "Boutique loft conversion in Roma Norte, close to fully funded.",
     product: "DEUDA",
-    goal: 1_500_000,
+    goal: 150_000_000, # 1,500,000.00 MXN
     annual_rate_bps: 1250,
     term_months: 12,
     status: "open",
@@ -60,12 +61,12 @@ end
 torre, playa, roma = campaigns
 ana, luis, sofia = investors
 
-seed_investment!(torre, ana, 25_000, "torre-ana")
-seed_investment!(torre, luis, 15_000, "torre-luis")
-seed_investment!(playa, sofia, 40_000, "playa-sofia")
-seed_investment!(playa, ana, 10_000, "playa-ana")
-seed_investment!(roma, luis, 900_000, "roma-luis")
-seed_investment!(roma, sofia, 550_000, "roma-sofia")
+seed_investment!(torre, ana, 2_500_000, "torre-ana")      # 25,000.00 MXN
+seed_investment!(torre, luis, 1_500_000, "torre-luis")     # 15,000.00 MXN
+seed_investment!(playa, sofia, 4_000_000, "playa-sofia")   # 40,000.00 MXN
+seed_investment!(playa, ana, 1_000_000, "playa-ana")       # 10,000.00 MXN
+seed_investment!(roma, luis, 90_000_000, "roma-luis")      # 900,000.00 MXN
+seed_investment!(roma, sofia, 55_000_000, "roma-sofia")    # 550,000.00 MXN
 
 Campaign.find_each(&:refresh_status!)
 

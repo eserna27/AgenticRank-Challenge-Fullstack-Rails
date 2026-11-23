@@ -4,26 +4,34 @@ class Campaign < ApplicationRecord
 
   has_many :investments, dependent: :destroy
 
+  # Persist goal as integer cents (idempotent: safe if applied more than once).
+  normalizes :goal, with: ->(goal) { BigDecimal(goal.to_s).round.to_i }
+
   validates :name, presence: true
   validates :product, inclusion: { in: PRODUCTS }
-  validates :goal, numericality: { greater_than: 0 }
+  validates :goal, numericality: { greater_than: 0, only_integer: true }
   validates :annual_rate_bps, numericality: { greater_than_or_equal_to: 0 }
   validates :term_months, numericality: { greater_than: 0 }
   validates :status, inclusion: { in: STATUSES }
   validates :closes_on, presence: true
 
+  # Sum of investment amounts in integer cents.
   def raised
-    investments.sum(&:amount)
+    investments.sum(:amount)
   end
 
   def progress_pct
     return 0 if goal.zero?
 
-    [(raised / goal * 100).round, 100].min
+    [(raised * 100 / goal), 100].min
   end
 
+  # Returns projected return in cents for an investment amount (cents),
+  # using BigDecimal math (never floats).
   def projected_return(amount)
-    amount * (annual_rate_bps / 10_000.0) * (term_months / 12.0)
+    BigDecimal(amount.to_s) *
+      BigDecimal(annual_rate_bps) / 10_000 *
+      BigDecimal(term_months) / 12
   end
 
   def funded?
