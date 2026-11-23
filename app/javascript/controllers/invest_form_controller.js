@@ -8,13 +8,15 @@ export default class extends Controller {
   static targets = ["amount", "submit"]
 
   connect() {
-    this.element.addEventListener("turbo:submit-start", this.disableSubmit.bind(this))
-    this.element.addEventListener("turbo:submit-end", this.enableSubmit.bind(this))
+    this._disableSubmit = this.disableSubmit.bind(this)
+    this._enableSubmit = this.enableSubmit.bind(this)
+    this.element.addEventListener("turbo:submit-start", this._disableSubmit)
+    this.element.addEventListener("turbo:submit-end", this._enableSubmit)
   }
 
   disconnect() {
-    this.element.removeEventListener("turbo:submit-start", this.disableSubmit.bind(this))
-    this.element.removeEventListener("turbo:submit-end", this.enableSubmit.bind(this))
+    this.element.removeEventListener("turbo:submit-start", this._disableSubmit)
+    this.element.removeEventListener("turbo:submit-end", this._enableSubmit)
   }
 
   disableSubmit() {

@@ -5,7 +5,7 @@ class InvestmentTest < ActiveSupport::TestCase
     investment = Investment.new(
       campaign: campaigns(:torre),
       investor: investors(:ana),
-      amount: 500,
+      amount: 50_000,
       idempotency_key: SecureRandom.uuid
     )
 
@@ -16,10 +16,29 @@ class InvestmentTest < ActiveSupport::TestCase
     investment = Investment.new(
       campaign: campaigns(:torre),
       investor: investors(:ana),
-      amount: 100,
+      amount: 10_000,
       idempotency_key: SecureRandom.uuid
     )
 
     assert_not investment.valid?
+  end
+
+  test "idempotency_key must be unique" do
+    key = SecureRandom.uuid
+    Investment.create!(
+      campaign: campaigns(:torre),
+      investor: investors(:ana),
+      amount: 50_000,
+      idempotency_key: key
+    )
+
+    duplicate = Investment.new(
+      campaign: campaigns(:torre),
+      investor: investors(:luis),
+      amount: 60_000,
+      idempotency_key: key
+    )
+
+    assert_not duplicate.valid?
   end
 end
